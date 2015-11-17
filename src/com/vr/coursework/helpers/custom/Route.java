@@ -64,6 +64,7 @@ public class Route
 	public void merge(Route route)
 	{
 		this.route.addAll(route.route);
+		this.last = route.route.get(route.route.size() - 1);
 		this.capacityUsed += route.getCapacityUsed();
 	}
 	
