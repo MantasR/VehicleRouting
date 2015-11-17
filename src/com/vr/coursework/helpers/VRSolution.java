@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +17,9 @@ import com.vr.coursework.helpers.custom.SavingComparator;
 public class VRSolution {
 	public VRProblem prob;
 	public List<List<Customer>>soln;
-	public List<Route> sol;
+	public ArrayList<Route> sol;
 	
-	private List<Customer> inRoutes;
+	private HashSet<Customer> inRoutes;
 	
 	public VRSolution(VRProblem problem){
 		this.prob = problem;
@@ -40,7 +41,7 @@ public class VRSolution {
 	{
 		this.soln = new ArrayList<List<Customer>>();
 		this.sol = new ArrayList<Route>();
-		this.inRoutes = new ArrayList<Customer>();
+		this.inRoutes = new HashSet<Customer>();
 		
 		List<Saving> savings = new ArrayList<Saving>();
 		@SuppressWarnings("unchecked")
@@ -67,8 +68,7 @@ public class VRSolution {
 			{
 				if(s.from.c + s.to.c <= prob.depot.c)
 				{
-					Route route = new Route(prob.depot.c, customersCount);
-					route.add(s.from);
+					Route route = new Route(prob.depot.c, customersCount, s.from);
 					route.add(s.to);
 
 					this.inRoutes.add(s.from);
@@ -141,8 +141,7 @@ public class VRSolution {
 		}
 		while(customers.size() > 0)
 		{
-			Route route = new Route(prob.depot.c, customersCount);
-			route.add(customers.remove(0));
+			Route route = new Route(prob.depot.c, customersCount, customers.remove(0));
 			
 			this.sol.add(route);
 		}

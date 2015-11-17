@@ -11,21 +11,31 @@ public class Route
 	public Customer[] route;// = new Customer[10];
 	public int currentCount = 0;
 	public int head = 0;
+
+	private Customer first = null;
+	private Customer last = null;
 	
 	private int capacityUsed = 0;
 	private int capacity = 0;
 	
-	public Route(int capacity, int maxCustomers)
+	public Route(int capacity, int maxCustomers, Customer from)
 	{
 		this.route = new Customer[maxCustomers * 2];
 		this.head = maxCustomers;
 		this.capacity = capacity;
+		
+		this.first = from;
+		this.last = from;
+		this.route[this.head + this.currentCount] = from;
+		currentCount++;
+		this.capacityUsed += from.c;
 	}
 	
 	public void add(Customer point)
 	{
 		this.route[this.head + this.currentCount] = point;
 		currentCount++;
+		this.last = point;
 		
 		this.capacityUsed += point.c;
 	}
@@ -35,19 +45,20 @@ public class Route
 		this.head--;
 		this.route[this.head] = point;
 		currentCount++;
-//		this.last = point;
+		
+		this.first = point;
 		
 		this.capacityUsed += point.c;
 	}
 	
 	public boolean isLastDelivery(Customer point)
 	{
-		return this.route[this.head + this.currentCount - 1].equals(point);
+		return this.last.equals(point);
 	}
 	
 	public boolean isFirstDelivery(Customer point)
 	{
-		return this.route[this.head].equals(point);
+		return this.first.equals(point);
 	}
 	
 	public boolean willFit(Customer point)
@@ -71,6 +82,7 @@ public class Route
 		System.arraycopy(route.route, route.head, this.route, this.head + this.currentCount, route.currentCount);
 		this.currentCount += route.currentCount;
 		this.capacityUsed += route.getCapacityUsed();
+		this.last = route.last;
 	}
 	
 	public List<Customer> toArrayList()
