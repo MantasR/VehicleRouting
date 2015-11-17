@@ -19,7 +19,7 @@ public class VRSolution {
 	public List<List<Customer>>soln;
 	public ArrayList<Route> sol;
 	
-	private HashSet<Long> inRoutes;
+	private HashSet<Integer> inRoutes;
 	
 	public VRSolution(VRProblem problem){
 		this.prob = problem;
@@ -41,10 +41,10 @@ public class VRSolution {
 	{
 		this.soln = new ArrayList<List<Customer>>();
 		this.sol = new ArrayList<Route>();
-		this.inRoutes = new HashSet<Long>();
+		this.inRoutes = new HashSet<Integer>();
 		
 		List<Saving> savings = new ArrayList<Saving>();
-		HashMap<Long, Customer> customers = new HashMap<Long, Customer>();// = (List<Customer>) prob.customers.clone();// = prob.customers;
+		HashMap<Integer, Customer> customers = new HashMap<Integer, Customer>();// = (List<Customer>) prob.customers.clone();// = prob.customers;
 		
 		int customersCount = prob.customers.size();
 		
@@ -181,6 +181,11 @@ public class VRSolution {
 				cost += prev.distance(this.prob.depot);
 			}
 		}
+		
+		if(verify())
+			System.out.println("Vrified");
+		else
+			System.out.println("NOT Vrified");
 		
 		this.sol = null;
 		
