@@ -5,12 +5,16 @@ import java.awt.geom.Point2D;
 public class Customer extends Point2D.Double{
 
 	// Requirements of the customer (number to be delivered)
+	private static long counter = 0;
 	public int c;
+	public long id;
 	
 	public Customer(int x, int y, int requirement){
+		this.id = counter;
 		this.x = x;
 		this.y = y;
 		this.c = requirement;
+		counter++;
 	}
 	
 	/*

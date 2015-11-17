@@ -19,7 +19,7 @@ public class VRSolution {
 	public List<List<Customer>>soln;
 	public ArrayList<Route> sol;
 	
-	private HashSet<Customer> inRoutes;
+	private HashSet<Long> inRoutes;
 	
 	public VRSolution(VRProblem problem){
 		this.prob = problem;
@@ -41,17 +41,16 @@ public class VRSolution {
 	{
 		this.soln = new ArrayList<List<Customer>>();
 		this.sol = new ArrayList<Route>();
-		this.inRoutes = new HashSet<Customer>();
+		this.inRoutes = new HashSet<Long>();
 		
 		List<Saving> savings = new ArrayList<Saving>();
-		@SuppressWarnings("unchecked")
-		List<Customer> customers = (List<Customer>) prob.customers.clone();// = prob.customers;
+		HashMap<Long, Customer> customers = new HashMap<Long, Customer>();// = (List<Customer>) prob.customers.clone();// = prob.customers;
 		
 		int customersCount = prob.customers.size();
 		
-		for(Customer from : customers)
+		for(Customer from : prob.customers)
 		{
-			for(Customer to : customers)
+			for(Customer to : prob.customers)
 			{
 				if(!from.equals(to))
 				{
@@ -59,51 +58,53 @@ public class VRSolution {
 					savings.add(new Saving(from, to, saving));
 				}
 			}
+			
+			customers.put(from.id, from);
 		}
 		
 		Collections.sort(savings, new SavingComparator());
 		for(Saving s : savings)
 		{
-			if(!this.inRoutes.contains(s.from) && !this.inRoutes.contains(s.to))
+			if(!this.inRoutes.contains(s.from.id) && !this.inRoutes.contains(s.to.id))
 			{
 				if(s.from.c + s.to.c <= prob.depot.c)
 				{
 					Route route = new Route(prob.depot.c, customersCount, s.from);
 					route.add(s.to);
 
-					this.inRoutes.add(s.from);
-					this.inRoutes.add(s.to);
-					customers.remove(s.from);
-					customers.remove(s.to);
+					this.inRoutes.add(s.from.id);
+					this.inRoutes.add(s.to.id);
+					customers.remove(s.from.id);
+					customers.remove(s.to.id);
 					
 					this.sol.add(route);
 				}
 			}
 			else
 			{
-				if(!this.inRoutes.contains(s.to))
+				if(!this.inRoutes.contains(s.to.id))
 				{
 					for(Route route : this.sol)
 					{
 						if(route.isLastDelivery(s.from) && route.willFit(s.to))
 						{
 							route.add(s.to);
-							this.inRoutes.add(s.to);
-							customers.remove(s.to);
+							this.inRoutes.add(s.to.id);
+							customers.remove(s.to.id);
 							break;
 						}
 					}
 				}
 				
-				if(!this.inRoutes.contains(s.from))
+				if(!this.inRoutes.contains(s.from.id))
 				{
 					for(Route route : this.sol)
 					{
 						if(route.isFirstDelivery(s.to) && route.willFit(s.from))
 						{
 							route.addAtStart(s.from);
-							this.inRoutes.add(s.from);
-							customers.remove(s.from);
+							this.inRoutes.add(s.from.id);
+							customers.remove(s.from.id);
 							break;
 						}
 					}
@@ -139,11 +140,14 @@ public class VRSolution {
 				}
 			}
 		}
-		while(customers.size() > 0)
+		if(customers.size() > 0)
 		{
-			Route route = new Route(prob.depot.c, customersCount, customers.remove(0));
-			
-			this.sol.add(route);
+			for(Customer c : customers.values())
+			{
+				Route route = new Route(prob.depot.c, customersCount, c);
+				
+				this.sol.add(route);
+			}
 		}
 	}
 	
