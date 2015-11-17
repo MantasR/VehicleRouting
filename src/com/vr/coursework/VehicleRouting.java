@@ -14,7 +14,7 @@ public class VehicleRouting
 {
 	static long currTime = System.currentTimeMillis();
 	private static File dataDir = new File("data");
-	private static File resultDir = new File("results/clarke-wright-standart/" + currTime); 
+	private static File resultDir = new File("results/clarke-wright-testing/" + currTime); 
 
 	public static void main(String[] args) throws Exception
 	{
@@ -43,13 +43,13 @@ public class VehicleRouting
 		    }
 		});
 		
+
+//		String problemName = "rand00020prob";
+//		solveProblem(problemName);
 		for(String result : resultsSummary)
 			System.out.println(result);
 		
 		writeOut(resultDir.getAbsolutePath() + "/results-summary.csv", resultsSummary);
-
-//		String problemName = "rand00020prob";
-//		solveProblem(problemName);
 	}
 	
 	static String solveProblem(String problemName) throws Exception
