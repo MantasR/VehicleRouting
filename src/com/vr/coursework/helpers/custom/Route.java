@@ -8,6 +8,8 @@ import com.vr.coursework.helpers.Customer;
 public class Route
 {
 	public List<Customer> route = new ArrayList<Customer>();
+	public Customer[] route2;// = new Customer[10];
+	
 	private Customer last = null;
 	
 	private int capacityUsed = 0;
@@ -29,7 +31,7 @@ public class Route
 	public void addAtStart(Customer point)
 	{
 		this.route.add(0, point);
-		this.last = point;
+//		this.last = point;
 		
 		this.capacityUsed += point.c;
 	}
@@ -47,6 +49,22 @@ public class Route
 	public boolean willFit(Customer point)
 	{
 		return this.capacity >= (this.capacityUsed + point.c);
+	}
+	
+	public boolean willFit(int capacity)
+	{
+		return this.capacity >= (this.capacityUsed + capacity);
+	}
+	
+	public int getCapacityUsed()
+	{
+		return this.capacityUsed;
+	}
+	
+	public void merge(Route route)
+	{
+		this.route.addAll(route.route);
+		this.capacityUsed += route.getCapacityUsed();
 	}
 	
 }

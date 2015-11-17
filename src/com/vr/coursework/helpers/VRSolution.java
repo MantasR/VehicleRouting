@@ -33,32 +33,36 @@ public class VRSolution {
 			soln.add(route);
 		}
 	}
-	
+
+	//Students should implement another solution
+	// Clarke Wright solution
 	public void clarkeWrightSolution()
 	{
 		this.soln = new ArrayList<List<Customer>>();
 		this.sol = new ArrayList<Route>();
 		this.inRoutes = new ArrayList<Customer>();
+		
 		List<Saving> savings = new ArrayList<Saving>();
-	
-		for(Customer from : prob.customers)
+		@SuppressWarnings("unchecked")
+		List<Customer> customers = (List<Customer>) prob.customers.clone();// = prob.customers;
+		
+//		int customersCount = prob.customers.size();
+		
+		for(Customer from : customers)
 		{
-			for(Customer to : prob.customers)
+			for(Customer to : customers)
 			{
 				if(!from.equals(to))
 				{
 					double saving = (prob.depot.distance(from) + prob.depot.distance(to)) - from.distance(to);
-					System.out.println("Saving: " + saving);
 					savings.add(new Saving(from, to, saving));
 				}
 			}
 		}
 		
 		Collections.sort(savings, new SavingComparator());
-		System.out.println("==============================");
 		for(Saving s : savings)
 		{
-			System.out.println("Saving: " + s.saving);
 			if(!this.inRoutes.contains(s.from) && !this.inRoutes.contains(s.to))
 			{
 				if(s.from.c + s.to.c <= prob.depot.c)
@@ -69,6 +73,8 @@ public class VRSolution {
 
 					this.inRoutes.add(s.from);
 					this.inRoutes.add(s.to);
+					customers.remove(s.from);
+					customers.remove(s.to);
 					
 					this.sol.add(route);
 				}
@@ -83,6 +89,7 @@ public class VRSolution {
 						{
 							route.add(s.to);
 							this.inRoutes.add(s.to);
+							customers.remove(s.to);
 							break;
 						}
 					}
@@ -96,15 +103,50 @@ public class VRSolution {
 						{
 							route.addAtStart(s.from);
 							this.inRoutes.add(s.from);
+							customers.remove(s.from);
 							break;
 						}
 					}
 				}
+				
+				Route merged = null;
+				for(Route routeStart : this.sol)
+				{
+					if(merged != null)
+						break;
+					if(routeStart.isLastDelivery(s.from))
+					{
+						for(Route routeEnd : this.sol)
+						{
+							if(!routeStart.equals(routeEnd))
+							{
+								if(routeEnd.isFirstDelivery(s.to))
+								{
+									if(routeStart.willFit(routeEnd.getCapacityUsed()))
+									{
+										routeStart.merge(routeEnd);
+										merged = routeEnd;
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				if(merged != null)
+				{
+					this.sol.remove(merged);
+				}
 			}
 		}
+		while(customers.size() > 0)
+		{
+			Route route = new Route(prob.depot.c);
+			route.add(customers.remove(0));
+			
+			this.sol.add(route);
+		}
 	}
-	
-	//Students should implement another solution
 	
 	//Calculate the total journey
 	public double solnCost(){
