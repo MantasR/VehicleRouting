@@ -182,10 +182,10 @@ public class VRSolution {
 			}
 		}
 		
-		if(verify())
-			System.out.println("Vrified");
-		else
-			System.out.println("NOT Vrified");
+//		if(verify())
+//			System.out.println("Vrified");
+//		else
+//			System.out.println("NOT Vrified");
 		
 		this.sol = null;
 		
