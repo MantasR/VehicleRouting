@@ -46,7 +46,7 @@ public class VRSolution {
 		@SuppressWarnings("unchecked")
 		List<Customer> customers = (List<Customer>) prob.customers.clone();// = prob.customers;
 		
-//		int customersCount = prob.customers.size();
+		int customersCount = prob.customers.size();
 		
 		for(Customer from : customers)
 		{
@@ -67,8 +67,7 @@ public class VRSolution {
 			{
 				if(s.from.c + s.to.c <= prob.depot.c)
 				{
-					Route route = new Route(prob.depot.c);
-					route.add(s.from);
+					Route route = new Route(prob.depot.c, customersCount, s.from);
 					route.add(s.to);
 
 					this.inRoutes.add(s.from);
@@ -141,8 +140,7 @@ public class VRSolution {
 		}
 		while(customers.size() > 0)
 		{
-			Route route = new Route(prob.depot.c);
-			route.add(customers.remove(0));
+			Route route = new Route(prob.depot.c, customersCount, customers.remove(0));
 			
 			this.sol.add(route);
 		}
@@ -156,9 +154,9 @@ public class VRSolution {
 			this.soln = new ArrayList<List<Customer>>();
 			for(Route route : this.sol)
 			{
-				this.soln.add(route.route);
+				this.soln.add(route.toArrayList());
 				Customer prev = this.prob.depot;
-				for (Customer c : route.route){
+				for (Customer c : route.toArrayList()){
 					cost += prev.distance(c);
 					prev = c;
 				}

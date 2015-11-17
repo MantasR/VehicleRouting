@@ -7,22 +7,34 @@ import com.vr.coursework.helpers.Customer;
 
 public class Route
 {
-	public List<Customer> route = new ArrayList<Customer>();
-	public Customer[] route2;// = new Customer[10];
-	
+//	public List<Customer> route = new ArrayList<Customer>();
+	public Customer[] route;// = new Customer[10];
+	public int currentCount = 0;
+	public int head = 0;
+
+	private Customer first = null;
 	private Customer last = null;
 	
 	private int capacityUsed = 0;
 	private int capacity = 0;
 	
-	public Route(int capacity)
+	public Route(int capacity, int maxCustomers, Customer from)
 	{
+		this.route = new Customer[maxCustomers * 2];
+		this.head = maxCustomers;
 		this.capacity = capacity;
+		
+		this.first = from;
+		this.last = from;
+		this.route[this.head + this.currentCount] = from;
+		currentCount++;
+		this.capacityUsed += from.c;
 	}
 	
 	public void add(Customer point)
 	{
-		this.route.add(point);
+		this.route[this.head + this.currentCount] = point;
+		currentCount++;
 		this.last = point;
 		
 		this.capacityUsed += point.c;
@@ -30,8 +42,11 @@ public class Route
 	
 	public void addAtStart(Customer point)
 	{
-		this.route.add(0, point);
-//		this.last = point;
+		this.head--;
+		this.route[this.head] = point;
+		currentCount++;
+		
+		this.first = point;
 		
 		this.capacityUsed += point.c;
 	}
@@ -43,7 +58,7 @@ public class Route
 	
 	public boolean isFirstDelivery(Customer point)
 	{
-		return this.route.get(0).equals(point);
+		return this.first.equals(point);
 	}
 	
 	public boolean willFit(Customer point)
@@ -63,9 +78,22 @@ public class Route
 	
 	public void merge(Route route)
 	{
-		this.route.addAll(route.route);
-		this.last = route.route.get(route.route.size() - 1);
+		//arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
+		System.arraycopy(route.route, route.head, this.route, this.head + this.currentCount, route.currentCount);
+		this.currentCount += route.currentCount;
 		this.capacityUsed += route.getCapacityUsed();
+		this.last = route.last;
 	}
 	
+	public List<Customer> toArrayList()
+	{
+		List<Customer> list = new ArrayList<Customer>();
+		
+		for(int i = this.head; i < this.head + this.currentCount; i++)
+		{
+			list.add(this.route[i]);
+		}
+		
+		return list;
+	}
 }

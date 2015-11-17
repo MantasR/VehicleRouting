@@ -14,7 +14,7 @@ public class VehicleRouting
 {
 	static long currTime = System.currentTimeMillis();
 	private static File dataDir = new File("data");
-	private static File resultDir = new File("results/clarke-wright-standart/" + currTime); 
+	private static File resultDir = new File("results/clarke-wright-route-arrays/" + currTime); 
 
 	public static void main(String[] args) throws Exception
 	{
