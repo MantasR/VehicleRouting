@@ -36,18 +36,23 @@ public class VRSolution {
 	}
 
 	//Students should implement another solution
-	// Clarke Wright solution
+	
+	/**
+	 *  Clarke Wright solution.
+	 *  
+	 *  Current implementation is optimized.
+	 */
 	public void clarkeWrightSolution()
 	{
-		this.soln = new ArrayList<List<Customer>>();
-		this.sol = new ArrayList<Route>();
-		this.inRoutes = new HashSet<Integer>();
+		this.sol = new ArrayList<Route>(); // Complete solution for problem (List of routes)
+		this.inRoutes = new HashSet<Integer>(); // Used for lookup if customer is already added to list
 		
 		List<Saving> savings = new ArrayList<Saving>();
-		HashMap<Integer, Customer> customers = new HashMap<Integer, Customer>();// = (List<Customer>) prob.customers.clone();// = prob.customers;
+		HashMap<Integer, Customer> customers = new HashMap<Integer, Customer>(); // Used to keep track of left out Customers
 		
 		int customersCount = prob.customers.size();
 		
+		// Calculating savings
 		for(Customer from : prob.customers)
 		{
 			for(Customer to : prob.customers)
@@ -59,12 +64,16 @@ public class VRSolution {
 				}
 			}
 			
+			// Mapping all customers (id -> customer)
 			customers.put(from.id, from);
 		}
 		
+		// Sorting savings list using custom Comparator
 		Collections.sort(savings, new SavingComparator());
+		
 		for(Saving s : savings)
 		{
+			// if neither of customers are in the list - create new route.
 			if(!this.inRoutes.contains(s.from.id) && !this.inRoutes.contains(s.to.id))
 			{
 				if(s.from.c + s.to.c <= prob.depot.c)
@@ -72,8 +81,10 @@ public class VRSolution {
 					Route route = new Route(prob.depot.c, customersCount, s.from);
 					route.add(s.to);
 
+					// Add 'from' and 'to' ids to used customers list
 					this.inRoutes.add(s.from.id);
 					this.inRoutes.add(s.to.id);
+					// Remove both customers from available list
 					customers.remove(s.from.id);
 					customers.remove(s.to.id);
 					
@@ -82,6 +93,7 @@ public class VRSolution {
 			}
 			else
 			{
+				// If 'from' is already in the list, add 'to' to the end of the same route if it fits
 				if(!this.inRoutes.contains(s.to.id))
 				{
 					for(Route route : this.sol)
@@ -95,7 +107,7 @@ public class VRSolution {
 						}
 					}
 				}
-				
+				// If 'to' is already in the list, add 'from' to the end of the same route if it fits
 				if(!this.inRoutes.contains(s.from.id))
 				{
 					for(Route route : this.sol)
@@ -111,6 +123,7 @@ public class VRSolution {
 				}
 				
 				Route merged = null;
+				// Check for list to merge
 				for(Route routeStart : this.sol)
 				{
 					if(merged != null)
@@ -119,12 +132,14 @@ public class VRSolution {
 					{
 						for(Route routeEnd : this.sol)
 						{
-							if(!routeStart.equals(routeEnd))
+							if(!routeStart.equals(routeEnd))// we can do that as it will be same object (no need for custom Route.equal method
 							{
 								if(routeEnd.isFirstDelivery(s.to))
 								{
 									if(routeStart.willFit(routeEnd.getCapacityUsed()))
 									{
+										// if routeStart ends with 'from', routeEnd starts with 'to'
+										// and combined capacity of both do not exceed the 'truck' capacity - merge
 										routeStart.merge(routeEnd);
 										merged = routeEnd;
 									}
@@ -140,6 +155,7 @@ public class VRSolution {
 				}
 			}
 		}
+		// Add the left out customers to personal routes
 		if(customers.size() > 0)
 		{
 			for(Customer c : customers.values())
