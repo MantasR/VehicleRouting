@@ -33,8 +33,12 @@ public class VehicleRouting
 //		    		System.out.println(name.replace(".csv", ""));
 		    		String problemName = name.replace(".csv", "");
 		    		try {
-		    			String result = solveProblem(problemName);
-						resultsSummary.add(result);
+		    			resultsSummary.add(problemName);
+		    			for(int i = 0; i < 20; i++)
+		    			{
+			    			String result = solveProblem(problemName);
+							resultsSummary.add(result);
+		    			}
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -70,7 +74,7 @@ public class VehicleRouting
 		s.writeOut(resultDir.getAbsolutePath() + "/solution-" + problemName + ".csv");
 		s.writeSVG(resultDir.getAbsolutePath() + "/" + problemName + ".svg", resultDir.getAbsolutePath() + "/solution-" + problemName + ".svg");
 	
-		return problemName + "," + cost + "," + timeTaken;
+		return cost + "," + timeTaken;
 	}
 	
 	public static void writeOut(String filename, List<String> results) throws Exception{
