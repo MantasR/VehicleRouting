@@ -198,15 +198,11 @@ public class VRSolution {
 			}
 		}
 		
-//		if(verify())
-//			System.out.println("Vrified");
-//		else
-//			System.out.println("NOT Vrified");
-		
 		this.sol = null;
 		
 		return cost;
 	}
+	
 	public Boolean verify(){
 		//Check that no route exceeds capacity
 		Boolean okSoFar = true;

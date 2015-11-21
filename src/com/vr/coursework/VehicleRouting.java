@@ -23,15 +23,19 @@ public class VehicleRouting
 		System.out.println("Program Started");
 		resultDir.mkdirs();// create dir for saving results
 		
+		// Going through all files in data directory
 		Files.walk(Paths.get(dataDir.getAbsolutePath())).forEach(filePath -> {
 		    if (Files.isRegularFile(filePath)) {
 		    	String name = filePath.toFile().getName();
+		    	// checking if file is a problem file 
 		    	if(name.endsWith("prob.csv"))
 		    	{
+		    		// getting problem name
 		    		String problemName = name.replace(".csv", "");
 		    		try {
-//		    			String result = solveProblem(problemName);
-		    			String result = benchmarkSolutions(problemName);
+		    			// solving problem and saving in summary
+		    			String result = solveProblem(problemName);
+//		    			String result = benchmarkSolutions(problemName);
 						resultsSummary.add(result);
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -39,13 +43,22 @@ public class VehicleRouting
 		    	}
 		    }
 		});
-		 
+		
+		// Printing out summary
 		for(String result : resultsSummary)
 			System.out.println(result);
 		
+		// Saving summary to file 
 		writeOut(resultDir.getAbsolutePath() + "/results-summary.csv", resultsSummary);
 	}
 	
+	/**
+	 * Function used to get costs of benchmark solutions
+	 * 
+	 * @param problemName - name of the problem to run
+	 * @return problem name and solution cost in csv. -> "problem0000,5000"
+	 * @throws Exception
+	 */
 	static String benchmarkSolutions(String problemName) throws Exception
 	{
 		String result = "";
@@ -63,6 +76,13 @@ public class VehicleRouting
 		return result;
 	}
 	
+	/**
+	 * Function which runs the solutions and gathers the data about performance and cost
+	 * 
+	 * @param problemName - name of the problem to run
+	 * @return problem name, solution cost and solution performance in milliseconds in csv. -> "problem0000,5000,1234"
+	 * @throws Exception
+	 */
 	static String solveProblem(String problemName) throws Exception
 	{
 		VRProblem p = new VRProblem(dataDir.getAbsolutePath() + "/" + problemName + ".csv");
@@ -71,8 +91,8 @@ public class VehicleRouting
 		
 		long startTime = System.currentTimeMillis();
 		
-//		s.oneRoutePerCustomerSolution(); //Cost: 15775.47015215582
-		s.clarkeWrightSolution(); //Cost: 4386.4998707833365 time: 7;  Cost with merging: 3520.4639295412285 time: 8
+//		s.oneRoutePerCustomerSolution();
+		s.clarkeWrightSolution();
 		
 		long endTime = System.currentTimeMillis();
 		double cost = s.solnCost();
@@ -84,15 +104,18 @@ public class VehicleRouting
 		return problemName + "," + cost + "," + timeTaken;
 	}
 	
-	public static void writeOut(String filename, List<String> results) throws Exception{
+	/**
+	 * Function used to save results summary in file
+	 * 
+	 * @param filename - path to file
+	 * @param results - List of strings in csv format
+	 * @throws Exception
+	 */
+	public static void writeOut(String filename, List<String> results) throws Exception
+	{
 		PrintStream ps = new PrintStream(filename);
-		for(String result:results){
-//			boolean firstOne = true;
-//			for(Customer c:route){
-//				if (!firstOne)
-//					ps.print(",");
-//				firstOne = false;
-//			}
+		for(String result:results)
+		{
 			ps.printf(result);
 			ps.println();
 		}
